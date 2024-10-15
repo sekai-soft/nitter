@@ -12,6 +12,7 @@ REDIS_PASSWORD_PLZ_CHANGE = "[REDIS_PASSWORD_PLZ_CHANGE]"
 BASE64_MEDIA_PLZ_CHANGE = "[BASE64_MEDIA_PLZ_CHANGE]"
 THEME_PLZ_CHANGE = "[THEME_PLZ_CHANGE]"
 INFINITE_SCROLL_PLZ_CHANGE = "[INFINITE_SCROLL_PLZ_CHANGE]"
+ENABLE_DEBUG_PLZ_CHANGE = "[ENABLE_DEBUG_PLZ_CHANGE]"
 
 TEMPLATE = """[Server]
 hostname = "[HOSTNAME_PLZ_CHANGE]"  # for generating links, change this to your own domain/ip
@@ -38,7 +39,7 @@ redisMaxConnections = 30
 hmacKey = "secretkey"  # random key for cryptographic signing of video urls
 base64Media = [BASE64_MEDIA_PLZ_CHANGE]  # use base64 encoding for proxied media urls
 enableRSS = true  # set this to false to disable RSS feeds
-enableDebug = false  # enable request logs and debug endpoints (/.accounts)
+enableDebug = [ENABLE_DEBUG_PLZ_CHANGE]  # enable request logs and debug endpoints (/.accounts)
 proxy = ""  # http/https url, SOCKS proxies are not supported
 proxyAuth = ""
 tokenCount = 10
@@ -89,6 +90,7 @@ def main() -> str:
     title = getenv_treat_empty_string_as_none("INSTANCE_TITLE", "My Nitter instance")
     theme = getenv_treat_empty_string_as_none("INSTANCE_THEME", "Nitter")
     infinite_scroll = "true" if os.getenv("INSTANCE_INFINITE_SCROLL") == "1" else "false"
+    enable_debug = "true" if os.getenv("INSTANCE_ENABLE_DEBUG") == "1" else "false"
 
     return TEMPLATE \
         .replace(HOSTNAME_PLZ_CHANGE, hostname) \
@@ -100,7 +102,8 @@ def main() -> str:
         .replace(BASE64_MEDIA_PLZ_CHANGE, base64_media) \
         .replace(TITLE_PLZ_CHANGE, title) \
         .replace(THEME_PLZ_CHANGE, theme) \
-        .replace(INFINITE_SCROLL_PLZ_CHANGE, infinite_scroll)
+        .replace(INFINITE_SCROLL_PLZ_CHANGE, infinite_scroll) \
+        .replace(ENABLE_DEBUG_PLZ_CHANGE, enable_debug)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

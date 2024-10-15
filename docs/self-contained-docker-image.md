@@ -38,7 +38,8 @@ In addition to the [regular Nitter docker image](https://github.com/sekai-soft/n
 | INSTANCE_HOSTNAME          | No       | The hostname used to render public-facing URLs such as hyperlinks in RSS feeds. Defaults to `localhost:8080`.                                                                         |
 | INSTANCE_HTTPS             | No       | Use `1` to enable serving https traffic.                                                                                                                                              |
 | DEBUG                      | No       | Use `1` to log debug messages.                                                                                                                                                        |
-| RESET_NITTER_ACCOUNTS_FILE | No       | Use `1` to remove the existing `/nitter-data/guest_accounts.json` file                                                                                                                    |
+| RESET_NITTER_ACCOUNTS_FILE | No       | Use `1` to remove the existing `/nitter-data/guest_accounts.json` file                                                                                                                |
+| INSTANCE_ENABLE_DEBUG      | No       | Use `1` to enable debug logging                                                                                                                                                       |
 
 * After the container is up, Nitter is available at port 8081 within the container if Nginx is enabled, and at port 8080 within the container if Nginx is disabled.
 

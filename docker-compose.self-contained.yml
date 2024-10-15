@@ -34,6 +34,7 @@ services:
       # optional debugging flags
       - DEBUG=1
       - RESET_NITTER_ACCOUNTS_FILE=1
+      - INSTANCE_ENABLE_DEBUG=1
     env_file:
       # should require from env
       # TWITTER_USERNAME
