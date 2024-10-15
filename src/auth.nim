@@ -162,6 +162,7 @@ proc getGuestAccount*(api: Api): Future[GuestAccount] {.async.} =
     if result.isReady(api): break
     result = accountPool.sample()
 
+  log "selected account: ", result.id
   if not result.isNil and result.isReady(api):
     inc result.pending
   else:
