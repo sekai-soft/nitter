@@ -88,7 +88,7 @@ proc createRssRouter*(cfg: Config) =
       cond '.' notin @"name"
       let
         name = @"name"
-        key = redisKey("twitter", name, getCursor())
+        key = redisKey("twitter2", name, getCursor())
 
       var rss = await getCachedRss(key)
       if rss.cursor.len > 0:
