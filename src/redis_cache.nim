@@ -3,6 +3,7 @@ import asyncdispatch, times, strformat, strutils, tables, hashes
 import redis, redpool, flatty, supersnappy
 
 import types, api
+import random
 
 const
   redisNil = "\0\0"
@@ -106,7 +107,9 @@ proc cacheRss*(query: string; rss: Rss) {.async.} =
     dawait r.hSet(key, "min", rss.cursor)
     if rss.cursor != "suspended":
       dawait r.hSet(key, "rss", compress(rss.feed))
-    dawait r.expire(key, rssCacheTime)
+    let rssCacheTimeJitter = (rand(rssCacheTime)).int
+    echo "RSS cache time jitter: ", rssCacheTimeJitter
+    dawait r.expire(key, rssCacheTime + rssCacheTimeJitter)
 
 template deserialize(data, T) =
   try:
