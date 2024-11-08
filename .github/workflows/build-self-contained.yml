@@ -102,3 +102,20 @@ jobs:
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create -t ghcr.io/${{ github.repository_owner }}/nitter-self-contained:latest $(printf 'ghcr.io/${{ github.repository_owner }}/nitter-self-contained@sha256:%s ' *)
+
+  deploy-fly:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    concurrency: deploy-group    # optional: ensure only one action runs at a time
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy and update fly.toml
+        run: |
+          cp fly.example.toml fly.toml
+          sed -i "s/app = 'nitter'/app = '${{ env.FLY_APP_NAME }}'/" fly.toml
+        env:
+          FLY_APP_NAME: ${{ secrets.FLY_APP_NAME }}
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
