@@ -22,6 +22,7 @@ services:
       - INSTANCE_INFINITE_SCROLL=1
       - INSTANCE_BASE64_MEDIA=1
       - INSTANCE_HOSTNAME=localhost:8081
+      - INSTANCE_RSS_MINUTES=60
       # - INSTANCE_HTTPS=1
       # optional for setups without redis and/or ng1inx
       # - DISABLE_REDIS=1

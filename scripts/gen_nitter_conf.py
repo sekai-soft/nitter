@@ -13,6 +13,7 @@ BASE64_MEDIA_PLZ_CHANGE = "[BASE64_MEDIA_PLZ_CHANGE]"
 THEME_PLZ_CHANGE = "[THEME_PLZ_CHANGE]"
 INFINITE_SCROLL_PLZ_CHANGE = "[INFINITE_SCROLL_PLZ_CHANGE]"
 ENABLE_DEBUG_PLZ_CHANGE = "[ENABLE_DEBUG_PLZ_CHANGE]"
+RSS_MIUNTES_PLZ_CHANGE = "[RSS_MIUNTES_PLZ_CHANGE]"
 
 TEMPLATE = """[Server]
 hostname = "[HOSTNAME_PLZ_CHANGE]"  # for generating links, change this to your own domain/ip
@@ -25,7 +26,7 @@ staticDir = "./public"
 
 [Cache]
 listMinutes = 240  # how long to cache list info (not the tweets, so keep it high)
-rssMinutes = 10  # how long to cache rss queries
+rssMinutes = [RSS_MIUNTES_PLZ_CHANGE]  # how long to cache rss queries
 redisHost = "[REDIS_HOST_PLZ_CHANGE]"  # Change to "nitter-redis" if using docker-compose
 redisPort = [REDIS_PORT_PLZ_CHANGE]
 redisPassword = "[REDIS_PASSWORD_PLZ_CHANGE]"
@@ -91,6 +92,7 @@ def main() -> str:
     theme = getenv_treat_empty_string_as_none("INSTANCE_THEME", "Nitter")
     infinite_scroll = "true" if os.getenv("INSTANCE_INFINITE_SCROLL") == "1" else "false"
     enable_debug = "true" if os.getenv("INSTANCE_ENABLE_DEBUG") == "1" else "false"
+    rss_minutes = getenv_treat_empty_string_as_none("INSTANCE_RSS_MINUTES", "10")
 
     return TEMPLATE \
         .replace(HOSTNAME_PLZ_CHANGE, hostname) \
@@ -103,7 +105,9 @@ def main() -> str:
         .replace(TITLE_PLZ_CHANGE, title) \
         .replace(THEME_PLZ_CHANGE, theme) \
         .replace(INFINITE_SCROLL_PLZ_CHANGE, infinite_scroll) \
-        .replace(ENABLE_DEBUG_PLZ_CHANGE, enable_debug)
+        .replace(ENABLE_DEBUG_PLZ_CHANGE, enable_debug) \
+        .replace(RSS_MIUNTES_PLZ_CHANGE, rss_minutes)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
