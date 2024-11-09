@@ -60,7 +60,7 @@ redis-server &
 
 2. TBD You need a `guest_accounts.json` file
 
-3. Start development build
+3. Start development build. Access the instance at [`localhost:8080`](http://localhost:8080/)
 
 ```
 nimble run
