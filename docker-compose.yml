@@ -1,48 +1,46 @@
 version: "3"
 
 services:
-
   nitter:
     build:
       context: .
     ports:
-      - "127.0.0.1:8080:8080" # Replace with "8080:8080" if you don't use a reverse proxy
+      - "8081:8081"
     volumes:
-      - ./nitter.conf:/src/nitter.conf:Z,ro
-      - ./guest_accounts.json:/src/guest_accounts.json:Z,ro
-    depends_on:
-      - nitter-redis
-    restart: unless-stopped
-    healthcheck:
-      test: wget -nv --tries=1 --spider http://127.0.0.1:8080/Jack/status/20 || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 2
-    user: "998:998"
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-
-  nitter-redis:
-    image: redis:6-alpine
-    container_name: nitter-redis
-    command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - nitter-redis:/data
-    restart: unless-stopped
-    healthcheck:
-      test: redis-cli ping
-      interval: 30s
-      timeout: 5s
-      retries: 2
-    user: "999:1000"
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-
+      # should map this in PaaS
+      - nitter-data:/nitter-data
+      # optional mapping for twitter-credentials.json file
+      # - ./twitter-credentials.json:/nitter-data/twitter-credentials.json
+    environment:
+      # shuold be included for custom paths
+      - NITTER_ACCOUNTS_FILE=/nitter-data/guest_accounts.json
+      # optional twitter-credentials.json custom path
+      # - TWITTER_CREDENTIALS_FILE=/nitter-data/twitter-credentials.json
+      # optional instance custmizations from env
+      - INSTANCE_TITLE=Custom title
+      - INSTANCE_THEME=Twitter Dark
+      - INSTANCE_INFINITE_SCROLL=1
+      - INSTANCE_BASE64_MEDIA=1
+      - INSTANCE_HOSTNAME=localhost:8081
+      # - INSTANCE_HTTPS=1
+      # optional for setups without redis and/or ng1inx
+      # - DISABLE_REDIS=1
+      # - DISABLE_NGINX=1
+      # optional for setups without redis, e.g. external redis connection info
+      # - REDIS_HOST=nitter-redis
+      # - REDIS_PORT=6379
+      # - REDIS_PASSWORD=
+      # optional debugging flags
+      - DEBUG=1
+      - RESET_NITTER_ACCOUNTS_FILE=1
+      - INSTANCE_ENABLE_DEBUG=1
+    env_file:
+      # should require from env
+      # TWITTER_USERNAME
+      # TWITTER_PASSWORD
+      # INSTANCE_RSS_PASSWORD
+      # INSTANCE_WEB_USERNAME
+      # INSTANCE_WEB_PASSWORD
+      - .env
 volumes:
-  nitter-redis:
+  nitter-data:

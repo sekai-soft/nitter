@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: self-contained.Dockerfile
+          file: Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/nitter-self-contained:latest
           platforms: linux/amd64
@@ -60,7 +60,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: self-contained.Dockerfile
+          file: Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/nitter-self-contained:latest
           platforms: linux/arm64

@@ -217,7 +217,7 @@ if __name__ == "__main__":
         auth_results.append(auth_result)
 
     if len(list(filter(lambda x: x is not None, auth_results))) == 0:
-        print("Failed authentication for any account. Did you enter the right username/password? Please rerun with environment variable DEBUG=1 for debugging, e.g. uncomment the DEBUG=1 in docker-compose.self-contained.yml file.")
+        print("Failed authentication for any account. Did you enter the right username/password? Please rerun with environment variable DEBUG=1 for debugging, e.g. uncomment the DEBUG=1 in docker-compose.yml file.")
         sys.exit(1)
 
     valid_auth_results = []

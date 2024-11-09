@@ -3,8 +3,8 @@ import time
 import requests
 
 # Stop and start the docker compose stack
-os.system("docker compose -f docker-compose.self-contained.yml down")
-os.system("docker compose -f docker-compose.self-contained.yml up --build -d")
+os.system("docker compose -f docker-compose.yml down")
+os.system("docker compose -f docker-compose.yml up --build -d")
 
 # Long poll (max 5 minutes) localhost:8081 until it returns 401
 root_url = "http://localhost:8081"
@@ -67,7 +67,7 @@ assert authenticated_web_ui_resp.status_code == 200
 assert authenticated_web_ui_resp.text != ""
 
 # Export logs
-os.system("docker compose -f docker-compose.self-contained.yml logs > self-contained-test.logs")
+os.system("docker compose -f docker-compose.yml logs > integration-test.logs")
 
 # Stop the docker compose stack
-os.system("docker compose -f docker-compose.self-contained.yml down")
+os.system("docker compose -f docker-compose.yml down")

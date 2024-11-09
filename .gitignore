@@ -14,5 +14,5 @@ guest_accounts.json*
 dump.rdb
 .env
 twitter-credentials.json
-self-contained-test.logs
+integration-test.logs
 fly.toml

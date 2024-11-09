@@ -1,196 +1,102 @@
 # Nitter
 
-[![Test Matrix](https://github.com/zedeus/nitter/workflows/Tests/badge.svg)](https://github.com/zedeus/nitter/actions/workflows/run-tests.yml)
-[![Test Matrix](https://github.com/zedeus/nitter/workflows/Docker/badge.svg)](https://github.com/zedeus/nitter/actions/workflows/build-docker.yml)
-[![License](https://img.shields.io/github/license/zedeus/nitter?style=flat)](#license)
+Nitter is an alternative Twitter front-end that focuses on privacy and performance.
 
-A free and open source alternative Twitter front-end focused on privacy and
-performance. \
-Inspired by the [Invidious](https://github.com/iv-org/invidious)
-project.
+This is a forked version of Nitter ([original version](https://github.com/sekai-soft/nitter)) with the following enhancements
 
-- No JavaScript or ads
-- All requests go through the backend, client never talks to Twitter
-- Prevents Twitter from tracking your IP or JavaScript fingerprint
-- Uses Twitter's unofficial API (no rate limits or developer account required)
-- Lightweight (for [@nim_lang](https://nitter.net/nim_lang), 60KB vs 784KB from twitter.com)
-- RSS feeds
-- Themes
-- Mobile support (responsive design)
-- AGPLv3 licensed, no proprietary instances permitted
+* Twitter authentication baked-in: Instead of fiddling with bash or nodejs or python scripts, Twitter authentication is baked-in. Simply pass in Twitter username and password as environment variables or JSON files to authenticate Nitter with guest accounts.
+* Easier configuration: Pass in environment variables to configure Nitter instead of making a configuration file. This is particularly useful for deploying on PaaS where mounting configuration files might be difficult.
+* Redis baked-in: Optionally start a Redis instance in addition to the Nitter instance. This is also particularly useful for deploying on PaaS where they charge a Redis instance additionally.
+* Anti-abuse baked-in: Optionally start a Nginx instance in front of the Nitter instance that password protects it to prevent malicious scrapers
+* Fix video playback via Nitter proxying
+* Fix photo rail section on profile page
+* Add optional Sentry error reporting
+* Rate-limit retrier baked-in: Optionally start a coprocess that gathers all requests that had been rate-limited and retry them later. This ensures that those rate-limited requests will be cached by the next time the same requests come in, e.g. from a RSS reader.
+* Unified Docker image for x86_64 and arm64
 
-Liberapay: https://liberapay.com/zedeus \
-Patreon: https://patreon.com/nitter \
-BTC: bc1qp7q4qz0fgfvftm5hwz3vy284nue6jedt44kxya \
-ETH: 0x66d84bc3fd031b62857ad18c62f1ba072b011925 \
-LTC: ltc1qhsz5nxw6jw9rdtw9qssjeq2h8hqk2f85rdgpkr \
-XMR: 42hKayRoEAw4D6G6t8mQHPJHQcXqofjFuVfavqKeNMNUZfeJLJAcNU19i1bGdDvcdN6romiSscWGWJCczFLe9RFhM3d1zpL
+## Usage
 
-## Roadmap
+* The forked docker image (with baked-in Twitter authentication, Redis, Nginx, ratelimit retrier, etc) is `ghcr.io/sekai-soft/nitter-self-contained:latest`
+    * The original docker image is `ghcr.io/sekai-soft/nitter:latest`. This version will contain fixes to Nitter itself, but not the auxillary components such as baked-in Twitter authentication and etc.
+* You should sign up and use a burner/temporary Twitter account with 2FA disabled.
+* You need a volume mapping into the container path `/nitter-data`
+    * This is regardless whether you wish to enable Redis. The volume is needed to persist Twitter authetication info even if Redis is disabled.
+* Specify environment variables
 
-- Embeds
-- Account system with timeline support
-- Archiving tweets/profiles
-- Developer API
+| Key                        | Required | Comment                                                                                                                                                                               |
+| -------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NITTER_ACCOUNTS_FILE       | Yes      | `/nitter-data/guest_accounts.json`                                                                                                                                                    |
+| TWITTER_USERNAME           | Maybe    | Burner Twitter account username. Set either this or `TWITTER_CREDENTIALS_FILE`                                                                                                        |
+| TWITTER_PASSWORD           | Maybe    | Burner Twitter account password. Set either this or `TWITTER_CREDENTIALS_FILE`                                                                                                        |
+| TWITTER_MFA_CODE           | No       | Current MFA code for the burner Twitter account credentials. Make sure you deploy fast enough so that it doesn't expire. It will also need to be replaced for consequent deployments. |
+| TWITTER_CREDENTIALS_FILE   | Maybe    | Path to a json list file of burner Twitter account credentials. Set either this or `TWITTER_USERNAME` and `TWITTER_PASSWORD` (optionally `TWITTER_MFA_CODE`).                         |
+| DISABLE_REDIS              | No       | Use `1` to disable the built-in Redis. You should ensure an external Redis instance is ready to connect before launching the container                                                |
+| REDIS_HOST                 | No       | Hostname for the Redis instance to connect to. Probably required if using an external Redis instance. Defaults to `localhost`.                                                        |
+| REDIS_PORT                 | No       | Port for the Redis instance to connect to. Probably required if using an external Redis instance. Defaults to `6379`.                                                                 |
+| REDIS_PASSWORD             | No       | Password for the Redis instance to connect to. Probably required if using an external Redis instance. Defaults to empty string.                                                       |
+| DISABLE_NGINX              | No       | Use `1` to disable the built-in Nginx. **Strongly discouraged if the container is exposed to the Internet.**                                                                          |
+| INSTANCE_RSS_PASSWORD      | No       | If the built-in Nginx is not disabled, required password used to protect all `/rss` paths. In order to access them you need to specify a `.../rss?key=<password>` query parameter.    |
+| INSTANCE_WEB_USERNAME      | No       | If the built-in Nginx is not disabled, required basic auth username to protect all non-rss web UIs.                                                                                   |
+| INSTANCE_WEB_PASSWORD      | No       | If the built-in Nginx is not disabled, required basic auth password to protect all non-rss web UIs.                                                                                   |
+| INSTANCE_BASE64_MEDIA      | No       | Use `1` to enable base64-encoded media.                                                                                                                                               |
+| INSTANCE_PORT              | No       | Port that your Nitter instance binds to. Default to `8080`                                                                                                                            |
+| INSTANCE_TITLE             | No       | Name of your Nitter instance shown on the web UI. Defaults to `My Nitter instance`.                                                                                                   |
+| INSTANCE_THEME             | No       | Default theme of the web UI. Available options are `Black`, `Dracula`, `Mastodon`, `Nitter`, `Pleroma`, `Twitter` and `Twitter Dark`. Defaults to `Nitter`.                           |
+| INSTANCE_INFINITE_SCROLL   | No       | Use `1` to enable infinite scrolling. Enabling this option will load Javascript on the web UI.                                                                                        |
+| INSTANCE_HOSTNAME          | No       | The hostname used to render public-facing URLs such as hyperlinks in RSS feeds. Defaults to `localhost:8080`.                                                                         |
+| INSTANCE_HTTPS             | No       | Use `1` to enable serving https traffic.                                                                                                                                              |
+| DEBUG                      | No       | Use `1` to log debug messages.                                                                                                                                                        |
+| RESET_NITTER_ACCOUNTS_FILE | No       | Use `1` to remove the existing `/nitter-data/guest_accounts.json` file                                                                                                                |
+| INSTANCE_ENABLE_DEBUG      | No       | Use `1` to enable debug logging                                                                                                                                                       |
 
-## Resources
+* After the container is up, Nitter is available at port 8081 within the container if Nginx is enabled, and at port 8080 within the container if Nginx is disabled.
 
-The wiki contains
-[a list of instances](https://github.com/zedeus/nitter/wiki/Instances) and
-[browser extensions](https://github.com/zedeus/nitter/wiki/Extensions)
-maintained by the community.
+## Develop Nitter itself
+1. Start Redis
 
-## Why?
-
-It's impossible to use Twitter without JavaScript enabled. For privacy-minded
-folks, preventing JavaScript analytics and IP-based tracking is important, but
-apart from using a VPN and uBlock/uMatrix, it's impossible. Despite being behind
-a VPN and using heavy-duty adblockers, you can get accurately tracked with your
-[browser's fingerprint](https://restoreprivacy.com/browser-fingerprinting/),
-[no JavaScript required](https://noscriptfingerprint.com/). This all became
-particularly important after Twitter [removed the
-ability](https://www.eff.org/deeplinks/2020/04/twitter-removes-privacy-option-and-shows-why-we-need-strong-privacy-laws)
-for users to control whether their data gets sent to advertisers.
-
-Using an instance of Nitter (hosted on a VPS for example), you can browse
-Twitter without JavaScript while retaining your privacy. In addition to
-respecting your privacy, Nitter is on average around 15 times lighter than
-Twitter, and in most cases serves pages faster (eg. timelines load 2-4x faster).
-
-In the future a simple account system will be added that lets you follow Twitter
-users, allowing you to have a clean chronological timeline without needing a
-Twitter account.
-
-## Screenshot
-
-![nitter](/screenshot.png)
-
-## Installation
-
-### Dependencies
-
-- libpcre
-- libsass
-- redis
-
-To compile Nitter you need a Nim installation, see
-[nim-lang.org](https://nim-lang.org/install.html) for details. It is possible to
-install it system-wide or in the user directory you create below.
-
-To compile the scss files, you need to install `libsass`. On Ubuntu and Debian,
-you can use `libsass-dev`.
-
-Redis is required for caching and in the future for account info. It should be
-available on most distros as `redis` or `redis-server` (Ubuntu/Debian).
-Running it with the default config is fine, Nitter's default config is set to
-use the default Redis port and localhost.
-
-Here's how to create a `nitter` user, clone the repo, and build the project
-along with the scss and md files.
-
-```bash
-# useradd -m nitter
-# su nitter
-$ git clone https://github.com/zedeus/nitter
-$ cd nitter
-$ nimble build -d:release
-$ nimble scss
-$ nimble md
-$ cp nitter.example.conf nitter.conf
+```
+redis-server &
 ```
 
-Set your hostname, port, HMAC key, https (must be correct for cookies), and
-Redis info in `nitter.conf`. To run Redis, either run
-`redis-server --daemonize yes`, or `systemctl enable --now redis` (or
-redis-server depending on the distro). Run Nitter by executing `./nitter` or
-using the systemd service below. You should run Nitter behind a reverse proxy
-such as [Nginx](https://github.com/zedeus/nitter/wiki/Nginx) or
-[Apache](https://github.com/zedeus/nitter/wiki/Apache) for security and
-performance reasons.
+2. TBD You need a `guest_accounts.json` file
 
-### Docker
+3. Start development build
 
-Page for the Docker image: https://hub.docker.com/r/zedeus/nitter
-
-#### NOTE: For ARM64 support, please use the separate ARM64 docker image: [`zedeus/nitter:latest-arm64`](https://hub.docker.com/r/zedeus/nitter/tags).
-
-To run Nitter with Docker, you'll need to install and run Redis separately
-before you can run the container. See below for how to also run Redis using
-Docker.
-
-To build and run Nitter in Docker:
-
-```bash
-docker build -t nitter:latest .
-docker run -v $(pwd)/nitter.conf:/src/nitter.conf -d --network host nitter:latest
+```
+nimble run
 ```
 
-Note: For ARM64, use this Dockerfile: [`Dockerfile.arm64`](https://github.com/zedeus/nitter/blob/master/Dockerfile.arm64).
+4. Flush Redis cache
 
-A prebuilt Docker image is provided as well:
-
-```bash
-docker run -v $(pwd)/nitter.conf:/src/nitter.conf -d --network host zedeus/nitter:latest
+```
+redis-cli flushall
 ```
 
-Using docker-compose to run both Nitter and Redis as different containers:
-Change `redisHost` from `localhost` to `nitter-redis` in `nitter.conf`, then run:
+## Develop enhanced version
+1. You need a `.env` file with the following
 
-```bash
-docker-compose up -d
+```
+TWITTER_USERNAME=
+TWITTER_PASSWORD=
+INSTANCE_RSS_PASSWORD=
+INSTANCE_WEB_USERNAME=
+INSTANCE_WEB_PASSWORD=
 ```
 
-Note the Docker commands expect a `nitter.conf` file in the directory you run
-them.
+For testing `twitter-credentials.json`, remove `TWITTER_USERNAME` and `TWITTER_PASSWORD` in `.env` file and uncomment lines with `twitter-credentials.json` in `docker-compose.yml`
 
-### systemd
+2. Run
 
-To run Nitter via systemd you can use this service file:
-
-```ini
-[Unit]
-Description=Nitter (An alternative Twitter front-end)
-After=syslog.target
-After=network.target
-
-[Service]
-Type=simple
-
-# set user and group
-User=nitter
-Group=nitter
-
-# configure location
-WorkingDirectory=/home/nitter/nitter
-ExecStart=/home/nitter/nitter/nitter
-
-Restart=always
-RestartSec=15
-
-[Install]
-WantedBy=multi-user.target
+```
+docker compose up --build
 ```
 
-Then enable and run the service:
-`systemctl enable --now nitter.service`
+3. Access the password protected Nitter instance at [`localhost:8081`](http://localhost:8081/)
 
-### Logging
+4. TBD Integration test is located in `tests/integration.py`. Docker compose stack logs are exported to `integration-test.logs` after the test is run.
 
-Nitter currently prints some errors to stdout, and there is no real logging
-implemented. If you're running Nitter with systemd, you can check stdout like
-this: `journalctl -u nitter.service` (add `--follow` to see just the last 15
-lines). If you're running the Docker image, you can do this:
-`docker logs --follow *nitter container id*`
-
-### Development in devcontainer
-```
-redis-server &  # start redis server in the background
-nimble scss  # compile scss
-nimble md  # compile doc
-nimble run  # access on localhost:8080
-```
-
-## Contact
-
-Feel free to join our [Matrix channel](https://matrix.to/#/#nitter:matrix.org).
-You can email me at zedeus@pm.me if you wish to contact me personally.
+### Some inner working details
+* Multiple processes are orchestrated by [`overmind`](https://github.com/DarthSim/overmind)
+* `/src/scripts/dump_env_and_procfile.sh` was needed before `overmind` can execute
+    * `dump_env_and_procfile.sh` writes the `Procfile` of course
+    * `dump_env_and_procfile.sh` also writes expected environment variables to `.env` because `overmind` does not seem to inherit environment so [it had to be an `.env` file](https://github.com/DarthSim/overmind?tab=readme-ov-file#overmind-environment)
