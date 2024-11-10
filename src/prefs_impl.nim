@@ -107,6 +107,11 @@ genPrefs:
       "Reddit -> Teddit/Libreddit"
       placeholder: "Teddit hostname"
 
+  "RSS readers":
+    minifluxHostname(input, ""):
+      "Subscribe to Miniflux hostname"
+      placeholder: "Miniflux hostname"
+
 iterator allPrefs*(): Pref =
   for k, v in prefList:
     for pref in v:

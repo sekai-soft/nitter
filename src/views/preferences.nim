@@ -46,6 +46,32 @@ javascript:(function() {
 })();
 """
 
+let subscribeNitterRssToMinifluxJs = """
+javascript:(function() {
+  const url = window.location.href;
+  if (!url.startsWith("https://x.com")) {
+    alert("This is not a Twitter page");
+    return
+  }
+  const rssUrl = `HTTP_OR_S://HOSTNAME${url.slice("https://x.com".length)}/rssRSS_KEY`;
+  const minifluxUrl = `https://MINIFLUX_HOSTNAME/bookmarklet?uri=${encodeURIComponent(rssUrl)}`;
+  window.open(minifluxUrl, '_blank').focus();
+})();
+"""
+
+let subscribeNitterRssToInoreaderJs = """
+javascript:(function() {
+  const url = window.location.href;
+  if (!url.startsWith("https://x.com")) {
+    alert("This is not a Twitter page");
+    return
+  }
+  const rssUrl = `HTTP_OR_S://HOSTNAME${url.slice("https://x.com".length)}/rssRSS_KEY`;
+  const inoreaderUrl = `https://www.inoreader.com/search/feeds/${encodeURIComponent(rssUrl)}`;
+  window.open(inoreaderUrl, '_blank').focus();
+})();
+"""
+
 proc renderPreferences*(prefs: Prefs; path: string; themes: seq[string]; hostname: string; useHttps: bool): VNode =
   buildHtml(tdiv(class="overlay-panel")):
     fieldset(class="preferences"):
@@ -56,6 +82,24 @@ proc renderPreferences*(prefs: Prefs; path: string; themes: seq[string]; hostnam
 
         legend:
           text "Bookmarklets (drag them to bookmark bar)"
+
+        if prefs.minifluxHostname.len > 0:
+          a(href=subscribeNitterRssToMinifluxJs
+            .replace("MINIFLUX_HOSTNAME", prefs.minifluxHostname)
+            .replace("HTTP_OR_S", if useHttps: "https" else: "http")
+            .replace("HOSTNAME", hostname)
+            .replace("RSS_KEY", if existsEnv("INSTANCE_RSS_PASSWORD"): "?key=" & getEnv("INSTANCE_RSS_PASSWORD") else: "")):
+            text "Subscribe Nitter RSS to Miniflux"
+
+          br()
+
+        a(href=subscribeNitterRssToInoreaderJs
+          .replace("HTTP_OR_S", if useHttps: "https" else: "http")
+          .replace("HOSTNAME", hostname)
+          .replace("RSS_KEY", if existsEnv("INSTANCE_RSS_PASSWORD"): "?key=" & getEnv("INSTANCE_RSS_PASSWORD") else: "")):
+          text "Subscribe Nitter RSS to Inoreader"
+
+        br()
 
         a(href=openNitterRssUrlJs
           .replace("HTTP_OR_S", if useHttps: "https" else: "http")
