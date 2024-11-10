@@ -11,6 +11,7 @@ services:
       - nitter-data:/nitter-data
       # optional mapping for twitter-credentials.json file
       # - ./twitter-credentials.json:/nitter-data/twitter-credentials.json
+      # - ./nitter.conf:/src/nitter.conf
     environment:
       # shuold be included for custom paths
       - NITTER_ACCOUNTS_FILE=/nitter-data/guest_accounts.json
@@ -23,6 +24,7 @@ services:
       - INSTANCE_BASE64_MEDIA=1
       - INSTANCE_HOSTNAME=localhost:8081
       - INSTANCE_RSS_MINUTES=60
+      # - USE_CUSTOM_CONF=1
       # - INSTANCE_HTTPS=1
       # optional for setups without redis and/or ng1inx
       # - DISABLE_REDIS=1

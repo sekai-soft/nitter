@@ -48,6 +48,7 @@ This is a forked version of Nitter ([original version](https://github.com/sekai-
 | RESET_NITTER_ACCOUNTS_FILE | No       | Use `1` to remove the existing `/nitter-data/guest_accounts.json` file                                                                                                                |
 | INSTANCE_ENABLE_DEBUG      | No       | Use `1` to enable debug logging                                                                                                                                                       |
 | INSTANCE_RSS_MINUTES       | No       | How long to cache RSS. Defaults to 10.                                                                                                                                                |
+| USE_CUSTOM_CONF            | No       | Use `1` to pass in custom `nitter.conf`. Make sure `/src/nitter.conf` is mounted.                                                                                                     |
 
 * After the container is up, Nitter is available at port 8081 within the container if Nginx is enabled, and at port 8080 within the container if Nginx is disabled.
 

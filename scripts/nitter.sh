@@ -4,8 +4,12 @@ set -e
 echo Running auth...
 python /src/scripts/auth.py /nitter-data/guest_accounts.json
 
-echo Generating nitter conf...
-python /src/scripts/gen_nitter_conf.py /src/nitter.conf
+if [ "$USE_CUSTOM_CONF" == "1" ]; then
+  echo Using custom conf. Make sure /src/nitter.conf exists.
+else
+  echo Generating nitter conf...
+  python /src/scripts/gen_nitter_conf.py /src/nitter.conf
+fi
 
 if [ "$DISABLE_REDIS" != "1" ]; then
   echo Waiting for redis...
