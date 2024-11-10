@@ -20,7 +20,7 @@ proc createPrefRouter*(cfg: Config) =
     get "/settings":
       let
         prefs = cookiePrefs()
-        html = renderPreferences(prefs, refPath(), findThemes(cfg.staticDir))
+        html = renderPreferences(prefs, refPath(), findThemes(cfg.staticDir), cfg.hostname, cfg.useHttps)
       resp renderMain(html, request, cfg, prefs, "Preferences")
 
     get "/settings/@i?":

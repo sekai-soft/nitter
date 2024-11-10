@@ -11,6 +11,7 @@ This is a forked version of Nitter ([original version](https://github.com/sekai-
 * Fix video playback via Nitter proxying
 * Fix photo rail section on profile page
 * Add optional Sentry error reporting
+* Add bookmarklet that opens protected RSS URL from a Twitter page
 * Unified Docker image for x86_64 and arm64
 
 ## Usage

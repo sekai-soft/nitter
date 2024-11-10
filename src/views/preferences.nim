@@ -5,6 +5,8 @@ import karax/[karaxdsl, vdom]
 import renderutils
 import ../types, ../prefs_impl
 
+from os import getEnv, existsEnv
+
 macro renderPrefs*(): untyped =
   result = nnkCall.newTree(
     ident("buildHtml"), ident("tdiv"), nnkStmtList.newTree())
@@ -32,13 +34,34 @@ macro renderPrefs*(): untyped =
 
       result[2].add stmt
 
-proc renderPreferences*(prefs: Prefs; path: string; themes: seq[string]): VNode =
+let openNitterRssUrlJs = """
+javascript:(function() {
+  const url = window.location.href;
+  if (!url.startsWith("https://x.com")) {
+    alert("This is not a Twitter page");
+    return
+  }
+  const rssUrl = `HTTP_OR_S://HOSTNAME${url.slice("https://x.com".length)}/rssRSS_KEY`;
+  window.open(rssUrl, '_blank').focus();
+})();
+"""
+
+proc renderPreferences*(prefs: Prefs; path: string; themes: seq[string]; hostname: string; useHttps: bool): VNode =
   buildHtml(tdiv(class="overlay-panel")):
     fieldset(class="preferences"):
       form(`method`="post", action="/saveprefs", autocomplete="off"):
         refererField path
 
         renderPrefs()
+
+        legend:
+          text "Bookmarklets (drag them to bookmark bar)"
+
+        a(href=openNitterRssUrlJs
+          .replace("HTTP_OR_S", if useHttps: "https" else: "http")
+          .replace("HOSTNAME", hostname)
+          .replace("RSS_KEY", if existsEnv("INSTANCE_RSS_PASSWORD"): "?key=" & getEnv("INSTANCE_RSS_PASSWORD") else: "")):
+          text "Open Nitter RSS URL"
 
         h4(class="note"):
           text "Preferences are stored client-side using cookies without any personal information."
