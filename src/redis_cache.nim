@@ -107,9 +107,7 @@ proc cacheRss*(query: string; rss: Rss) {.async.} =
     dawait r.hSet(key, "min", rss.cursor)
     if rss.cursor != "suspended":
       dawait r.hSet(key, "rss", compress(rss.feed))
-    let rssCacheTimeJitter = (rand(rssCacheTime)).int
-    echo "RSS cache time jitter: ", rssCacheTimeJitter
-    dawait r.expire(key, rssCacheTime + rssCacheTimeJitter)
+    dawait r.expire(key, rssCacheTime)
 
 template deserialize(data, T) =
   try:

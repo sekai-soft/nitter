@@ -13,7 +13,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"TakumiI.markdowntable"
+				"TakumiI.markdowntable",
+				"kosz78.nim"
 			]
 		}
 	}

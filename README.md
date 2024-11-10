@@ -11,7 +11,7 @@ This is a forked version of Nitter ([original version](https://github.com/sekai-
 * Fix video playback via Nitter proxying
 * Fix photo rail section on profile page
 * Add optional Sentry error reporting
-* Rate-limit retrier baked-in: Optionally start a coprocess that gathers all requests that had been rate-limited and retry them later. This ensures that those rate-limited requests will be cached by the next time the same requests come in, e.g. from a RSS reader.
+* (TBD) Rate-limit retrier baked-in: Optionally start a coprocess that gathers all requests that had been rate-limited and retry them later. This ensures that those rate-limited requests will be cached by the next time the same requests come in, e.g. from a RSS reader.
 * Unified Docker image for x86_64 and arm64
 
 ## Usage
