@@ -2,7 +2,7 @@
 import asyncdispatch, strformat, logging
 from net import Port
 from htmlgen import a
-from os import getEnv
+from os import getEnv, existsEnv
 
 import jester
 
@@ -12,8 +12,16 @@ import routes/[
   preferences, timeline, status, media, search, rss, list, debug,
   unsupported, embed, resolver, router_utils]
 
+import sentry
+
 const instancesUrl = "https://github.com/zedeus/nitter/wiki/Instances"
 const issuesUrl = "https://github.com/zedeus/nitter/issues"
+
+if existsEnv("SENTRY_DSN"):
+  echo "Sentry enabled"
+  init(getEnv("SENTRY_DSN"))
+else:
+  echo "Sentry disabled"
 
 let
   configPath = getEnv("NITTER_CONF_FILE", "./nitter.conf")

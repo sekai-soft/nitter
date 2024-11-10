@@ -24,6 +24,7 @@ requires "zippy#ca5989a"
 requires "flatty#e668085"
 requires "jsony#1de1f08"
 requires "oauth#b8c163b"
+requires "https://github.com/iffy/nim-sentry.git"
 
 # Tasks
 

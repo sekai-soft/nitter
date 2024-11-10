@@ -4,6 +4,8 @@ import jsony, packedjson, zippy, oauth1
 import types, auth, consts, parserutils, http_pool
 import experimental/types/common
 
+import sentry
+
 const
   rlRemaining = "x-rate-limit-remaining"
   rlReset = "x-rate-limit-reset"
@@ -110,9 +112,10 @@ template fetchImpl(result, fetchBody) {.dirty.} =
 template retry(bod) =
   try:
     bod
-  except RateLimitError:
+  except RateLimitError as e:
     let currentTime = now().format("yyyy-MM-dd HH:mm:ss")
     echo currentTime, " - [accounts] Rate limited, retrying ", api, " request..."
+    captureException(e)
     bod
 
 proc fetch*(url: Uri; api: Api): Future[JsonNode] {.async.} =
