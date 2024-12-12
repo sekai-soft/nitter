@@ -56,8 +56,8 @@ theme = "[THEME_PLZ_CHANGE]"
 replaceTwitter = ""
 replaceYouTube = ""
 replaceReddit = ""
-proxyVideos = true
-hlsPlayback = false
+proxyVideos = false
+hlsPlayback = true
 infiniteScroll = [INFINITE_SCROLL_PLZ_CHANGE]
 """
 
