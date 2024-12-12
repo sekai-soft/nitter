@@ -30,4 +30,4 @@ COPY scripts/assets/nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /etc/nginx/conf.d
 
 EXPOSE 8081
-CMD ["bash", "-c", "/src/scripts/dump_env_and_procfile.sh && /src/overmind s"]
+CMD ["bash", "-c", "/src/scripts/dump_env_and_procfile.sh && rm -f ./.overmind.sock && /src/overmind s"]
