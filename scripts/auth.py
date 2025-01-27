@@ -122,7 +122,6 @@ def auth(username: str, password: str, mfa_code: Optional[str]) -> Optional[dict
             return t3_subtask["open_account"]
         elif "enter_text" in t3_subtask:
             response_text = t3_subtask["enter_text"]["hint_text"]
-            print(f"Requested '{response_text}'")
             task4 = session.post(
                 "https://api.twitter.com/1.1/onboarding/task.json",
                 json={
@@ -141,6 +140,7 @@ def auth(username: str, password: str, mfa_code: Optional[str]) -> Optional[dict
                 },
                 headers=twitter_header,
             ).json()
+            logging.debug("task4 res=" + str(task4.json()))
             for t4_subtask in task4.get("subtasks", []):
                 if "open_account" in t4_subtask:
                     return t4_subtask["open_account"]
