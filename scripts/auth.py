@@ -140,7 +140,7 @@ def auth(username: str, password: str, mfa_code: Optional[str]) -> Optional[dict
                 },
                 headers=twitter_header,
             ).json()
-            logging.debug("task4 res=" + str(task4.json()))
+            logging.debug("task4 res=" + str(task4))
             for t4_subtask in task4.get("subtasks", []):
                 if "open_account" in t4_subtask:
                     return t4_subtask["open_account"]
