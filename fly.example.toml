@@ -25,7 +25,7 @@ kill_timeout = '5s'
   timeout = '5s'
   grace_period = '5m'
   method = 'GET'
-  path = '/logo.png'
+  path = '/settings'
 
 [[vm]]
   memory = '256mb'
