@@ -14,7 +14,7 @@
 		"vscode": {
 			"extensions": [
 				"TakumiI.markdowntable",
-				"kosz78.nim"
+				"NimLang.nimlang"
 			]
 		}
 	}
