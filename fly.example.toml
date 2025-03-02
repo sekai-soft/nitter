@@ -20,13 +20,6 @@ kill_timeout = '5s'
   auto_start_machines = false
   min_machines_running = 1
 
-[[http_service.checks]]
-  interval = '10s'
-  timeout = '5s'
-  grace_period = '5m'
-  method = 'GET'
-  path = '/settings'
-
 [[vm]]
   memory = '256mb'
   cpu_kind = 'shared'
