@@ -10,6 +10,7 @@ This is a forked version of Nitter ([original version](https://github.com/sekai-
 * Anti-abuse baked-in: Optionally start a Nginx instance in front of the Nitter instance that password protects it to prevent malicious scrapers
 * Fix video playback via Nitter proxying
 * Fix photo rail section on profile page
+* Add videos to profile RSS feed
 * Add optional Sentry error reporting
 * Add bookmarklet that opens protected RSS URLs from Twitter pages and subscribes them to Miniflux or Inoreader
 * Unified Docker image for x86_64 and arm64

@@ -255,12 +255,16 @@ proc parseTweet(js: JsonNode; jsCard: JsonNode = newJNull()): Tweet =
   result.expandTweetEntities(js)
 
   with jsMedia, js{"extended_entities", "media"}:
+    var mediaIndex = 1
     for m in jsMedia:
       case m{"type"}.getStr
       of "photo":
         result.photos.add m{"media_url_https"}.getImageStr
       of "video":
-        result.video = some(parseVideo(m))
+        let parsedVideo = parseVideo(m)
+        result.video = some(parsedVideo)
+        result.videos.add parsedVideo
+        result.videoIndices.add mediaIndex
         with user, m{"additional_media_info", "source_user"}:
           if user{"id"}.getInt > 0:
             result.attribution = some(parseUser(user))
@@ -274,6 +278,7 @@ proc parseTweet(js: JsonNode; jsCard: JsonNode = newJNull()): Tweet =
         if result.text.endsWith(url.getStr):
           result.text.removeSuffix(url.getStr)
           result.text = result.text.strip()
+      mediaIndex = mediaIndex + 1
 
   with jsWithheld, js{"withheld_in_countries"}:
     let withheldInCountries: seq[string] =

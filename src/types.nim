@@ -210,6 +210,8 @@ type
     gif*: Option[Gif]
     video*: Option[Video]
     photos*: seq[string]
+    videos*: seq[Video]
+    videoIndices*: seq[int]
 
   Tweets* = seq[Tweet]
 
