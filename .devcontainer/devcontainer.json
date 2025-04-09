@@ -7,9 +7,10 @@
 	"postCreateCommand": ".devcontainer/init.sh",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
-	},
+	// This doesn't work with Windsurf
+	// "features": {
+	// 	"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	// },
 	"customizations": {
 		"vscode": {
 			"extensions": [

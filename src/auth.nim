@@ -7,6 +7,7 @@ import experimental/parser/guestaccount
 const
   maxConcurrentReqs = 2
   dayInSeconds = 24 * 60 * 60
+  hourInSeconds = 60 * 60
   apiMaxReqs: Table[Api, int] = {
     Api.search: 50,
     Api.tweetDetail: 150,
@@ -133,7 +134,7 @@ proc isLimited(account: GuestAccount; api: Api): bool =
   if api in account.apis:
     let limit = account.apis[api]
 
-    if limit.limited and (epochTime().int - limit.limitedAt) > dayInSeconds:
+    if limit.limited and (epochTime().int - limit.limitedAt) > hourInSeconds:
       account.apis[api].limited = false
       log "resetting limit, api: ", api, ", id: ", account.id
 
