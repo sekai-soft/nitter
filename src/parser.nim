@@ -341,7 +341,7 @@ proc parseGraphThread(js: JsonNode): tuple[thread: Chain; self: bool] =
       let cursor = t{"item", "content", "value"}
       result.thread.cursor = cursor.getStr
       result.thread.hasMore = true
-    elif "tweet" in entryId:
+    elif "tweet" in entryId and "promoted" notin entryId:
       let
         isLegacy = t{"item"}.hasKey("itemContent")
         (contentKey, resultKey) = if isLegacy: ("itemContent", "tweet_results")
@@ -393,7 +393,7 @@ proc parseGraphConversation*(js: JsonNode; tweetId: string): Conversation =
       let (thread, self) = parseGraphThread(e)
       if self:
         result.after = thread
-      else:
+      elif thread.content.len > 0:
         result.replies.content.add thread
     elif entryId.startsWith("cursor-bottom"):
       result.replies.bottom = e{"content", "itemContent", "value"}.getStr
