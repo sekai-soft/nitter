@@ -135,4 +135,4 @@ jobs:
           tags: tag:ops
       - name: Pull and restart latest container
         run: |
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "ubuntu@ktcorp" "cd /home/ubuntu/galerie && docker compose pull nitter && docker compose up nitter -d"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "nixos@gibraltar" "cd /home/nixos/galerie && docker compose pull nitter && docker compose up nitter -d"
