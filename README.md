@@ -1,5 +1,7 @@
 # Nitter
 
+**Please create GitHub issues under [sekai-soft/guide-nitter-self-hosting](https://github.com/sekai-soft/guide-nitter-self-hosting). Thank you.**
+
 Nitter is an alternative Twitter front-end that focuses on privacy and performance.
 
 This is a forked version of Nitter ([original version](https://github.com/sekai-soft/nitter)) with the following enhancements
